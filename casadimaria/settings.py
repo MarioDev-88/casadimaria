@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-b+sv*p)@^oc0!n9nt+4f1+5-5v!pla87nmp&^#h%(&@yp#=0i-
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['casadimaria.onrender.com', 'localhost']
+ALLOWED_HOSTS = ['casadimaria.onrender.com', '104.248.52.156', 'localhost']
 
 
 # Application definition
@@ -84,32 +84,32 @@ WSGI_APPLICATION = 'casadimaria.wsgi.application'
 # }
 
 # LOCALHOST
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-#         'NAME': 'casa_di_maria',                      # Or path to database file if using sqlite3.
-#         # The following settings are not used with sqlite3:
-#         'USER': 'usuario', #postgres
-#         'PASSWORD': 'sandia123',
-#         'HOST': 'localhost',# Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
-#         'PORT': '5432',   
-#         #'SSLMODE': True
-#     }
-# }
-
-# PRODUCTION
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'casa_di_maria',                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
         'USER': 'usuario', #postgres
-        'PASSWORD': 'O13uYCK8Na8TvPwnq1zmETgWHGM8hqfj',
-        'HOST': 'dpg-d0dat7s9c44c73c9u9t0-a',# Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+        'PASSWORD': 'sandia123',
+        'HOST': 'localhost',# Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
         'PORT': '5432',   
         #'SSLMODE': True
     }
 }
+
+# PRODUCTION
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': 'casa_di_maria',                      # Or path to database file if using sqlite3.
+#         # The following settings are not used with sqlite3:
+#         'USER': 'usuario', #postgres
+#         'PASSWORD': 'O13uYCK8Na8TvPwnq1zmETgWHGM8hqfj',
+#         'HOST': 'dpg-d0dat7s9c44c73c9u9t0-a',# Empty for localhost through domain sockets or '127.0.0.1' for localhost through TCP.
+#         'PORT': '5432',   
+#         #'SSLMODE': True
+#     }
+# }
 
 
 # Password validation

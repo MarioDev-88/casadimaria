@@ -35,6 +35,9 @@ v1_api.register(GenerarContrato())
 v1_api.register(EliminarColaboradores())
 v1_api.register(CancelarCotizacion())
 v1_api.register(CrearEvento())
+v1_api.register(CrearPlatillo())
+v1_api.register(CrearPlatilloJoven())
+v1_api.register(CrearCostoFijo())
 
 urlpatterns = [
     path('api/', include(v1_api.urls)),

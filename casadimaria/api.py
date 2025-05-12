@@ -166,6 +166,53 @@ class CrearEvento(ModelResource):
         evento.save()
 
         return HttpResponse(content_type='application/json', status=201)
+    
+class CrearPlatillo(ModelResource):
+    class Meta:
+        queryset = Platillo.objects.all()
+        limit = 1
+        resource_name = 'crearplatillo'
+        allowed_methods = ['post']
+
+    def post_list(self, request, **kwargs):
+        data = json.loads(request.body)
+        evento = Platillo()
+        evento.nombre = data['nombre']
+        evento.precio = data['precio']
+        evento.save()
+
+        return HttpResponse(content_type='application/json', status=201)
+    
+class CrearPlatilloJoven(ModelResource):
+    class Meta:
+        queryset = PlatilloJovene.objects.all()
+        limit = 1
+        resource_name = 'crearplatillojoven'
+        allowed_methods = ['post']
+
+    def post_list(self, request, **kwargs):
+        data = json.loads(request.body)
+        evento = PlatilloJovene()
+        evento.nombre = data['nombre']
+        evento.save()
+
+        return HttpResponse(content_type='application/json', status=201)
+    
+class CrearCostoFijo(ModelResource):
+    class Meta:
+        queryset = CostoFijo.objects.all()
+        limit = 1
+        resource_name = 'crearcostofijo'
+        allowed_methods = ['post']
+
+    def post_list(self, request, **kwargs):
+        data = json.loads(request.body)
+        evento = CostoFijo()
+        evento.nombre = data['nombre']
+        evento.precio = data['precio']
+        evento.save()
+
+        return HttpResponse(content_type='application/json', status=201)
 
 class GenerarContrato(ModelResource):
     class Meta:

@@ -152,6 +152,21 @@ class GetCotizacion(ModelResource):
             'colaborador': ['icontains']
         }
 
+class CrearEvento(ModelResource):
+    class Meta:
+        queryset = Evento.objects.all()
+        limit = 1
+        resource_name = 'crearevento'
+        allowed_methods = ['post']
+
+    def post_list(self, request, **kwargs):
+        data = json.loads(request.body)
+        evento = Evento()
+        evento.nombre = data['nombre']
+        evento.save()
+
+        return HttpResponse(content_type='application/json', status=201)
+
 class GenerarContrato(ModelResource):
     class Meta:
         queryset = Cotizacion.objects.all()

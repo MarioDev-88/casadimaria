@@ -214,6 +214,22 @@ class CrearCostoFijo(ModelResource):
 
         return HttpResponse(content_type='application/json', status=201)
 
+class CrearComplemento(ModelResource):
+    class Meta:
+        queryset = Complemento.objects.all()
+        limit = 1
+        resource_name = 'crearcomplemento'
+        allowed_methods = ['post']
+
+    def post_list(self, request, **kwargs):
+        data = json.loads(request.body)
+        evento = Complemento()
+        evento.nombre = data['nombre']
+        evento.precio = data['precio']
+        evento.save()
+
+        return HttpResponse(content_type='application/json', status=201)
+
 class GenerarContrato(ModelResource):
     class Meta:
         queryset = Cotizacion.objects.all()

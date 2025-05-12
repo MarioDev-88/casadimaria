@@ -73,7 +73,7 @@ class CreateUser(ModelResource):
         usuario.nombre = data['nombre']
         usuario.telefono = data['telefono']
         usuario.password = make_password(data['pwd'])
-        usuario.identificacion = get_random_string(length=8)
+        usuario.identificacion = data['identificacion'] #get_random_string(length=8)
         usuario.save()
 
         return HttpResponse(content_type='application/json', status=201)

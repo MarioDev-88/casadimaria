@@ -136,8 +136,13 @@ class GetColaboradores(ModelResource):
         queryset = Colaboradore.objects.filter(status=True)
         resource_name = 'getcolaboradores'
         allowed_methods = ['get']
+        limit = 0
         always_return_data = True
-        fields = ['id', 'nombre']
+        fields = ['id', 'nombre', 'status']
+        filtering = {
+            'id': ['exact'],
+            'nombre': ['icontains']
+        }
 
 class GetCotizacion(ModelResource):
     class Meta:

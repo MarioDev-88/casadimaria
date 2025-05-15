@@ -58,6 +58,42 @@ class EliminarColaboradores(ModelResource):
         colaborador = self.obj_get(bundle, **kwargs)
         colaborador.status = False
         colaborador.save()
+
+class EditarCostoFijo(ModelResource):
+    class Meta:
+        queryset = CostoFijo.objects.all()
+        resource_name = 'editcostofijo'
+        allowed_methods = ['patch']
+
+    def obj_get(self, bundle, **kwargs):
+        try:
+            return CostoFijo.objects.get(pk=kwargs['pk'])
+        except CostoFijo.DoesNotExist:
+            raise HttpNotFound("Costo Fijo no encontrado")
+
+    def obj_update(self, bundle, **kwargs):
+        # Aquí puedes personalizar la lógica de actualización si es necesario        
+        costo_fijo = self.obj_get(bundle, **kwargs)
+        costo_fijo.precio = bundle.data['precio']
+        costo_fijo.save()
+
+class EditarPlatillo(ModelResource):
+    class Meta:
+        queryset = Platillo.objects.all()
+        resource_name = 'editplatillo'
+        allowed_methods = ['patch']
+
+    def obj_get(self, bundle, **kwargs):
+        try:
+            return Platillo.objects.get(pk=kwargs['pk'])
+        except Platillo.DoesNotExist:
+            raise HttpNotFound("Costo Fijo no encontrado")
+
+    def obj_update(self, bundle, **kwargs):
+        # Aquí puedes personalizar la lógica de actualización si es necesario        
+        platillo = self.obj_get(bundle, **kwargs)
+        platillo.precio = bundle.data['precio']
+        platillo.save()
     
 class CreateUser(ModelResource):
     class Meta:

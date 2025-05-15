@@ -39,6 +39,8 @@ v1_api.register(CrearPlatillo())
 v1_api.register(CrearPlatilloJoven())
 v1_api.register(CrearCostoFijo())
 v1_api.register(CrearComplemento())
+v1_api.register(EditarCostoFijo())
+v1_api.register(EditarPlatillo())
 
 urlpatterns = [
     path('api/', include(v1_api.urls)),

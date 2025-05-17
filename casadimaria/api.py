@@ -402,7 +402,7 @@ class CrearCotizacion(ModelResource):
         cotizacion.fecha_expiracion = fecha_evento + timedelta(days=15)
         cotizacion.save()
         cotizacion_instance = Cotizacion.objects.get(id=cotizacion.id)
-        cotizacion_instance.folio = "%d-COT%04d" % (cotizacion.creada_por.identificacion, cotizacion.id)
+        cotizacion_instance.folio = f"{cotizacion.creada_por.identificacion}-COT{cotizacion.id:05d}"
         cotizacion_instance.save()
 
         #Detalle

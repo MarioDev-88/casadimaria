@@ -5,6 +5,7 @@ import os
 import pdb
 from django.conf import settings
 from django.utils.crypto import get_random_string
+from django.db.models import Q
 from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS, Resource
 from tastypie import fields
 from tastypie.validation import Validation
@@ -388,20 +389,20 @@ class CrearCotizacion(ModelResource):
         cotizacion.fecha_evento = fecha_evento
         cotizacion.hora_inicio = hora_inicio
         cotizacion.hora_fin = hora_fin
-        cotizacion.evento = Evento.objects.get(id=data['id_evento'])
-        cotizacion.platillo = Platillo.objects.get(id=data['id_platillo'])
-        if data['id_evento'] == "3": # XV Anos
-            cotizacion.platillo_jovenes = PlatilloJovene.objects.get(id=data['id_platillo_joven'])
+        cotizacion.evento = Evento.objects.get(Q(nombre__iexact=data['id_evento']))
+        cotizacion.platillo = Platillo.objects.get(Q(nombre__iexact=data['id_platillo']))
+        if data['id_evento'] == "XV Años": # XV Anos
+            cotizacion.platillo_jovenes = PlatilloJovene.objects.get(Q(nombre__iexact=data['id_platillo_joven']))
             cotizacion.numero_jovenes = data['personas_jovenes']
         if 'adicional' in data:
-            cotizacion.adicional = Complemento.objects.get(id=data['adicional'])
+            cotizacion.adicional = Complemento.objects.get(Q(nombre__iexact=data['adicional']))
         cotizacion.numero_personas = data['personas']
-        cotizacion.colaborador = Colaboradore.objects.get(id=data['colaborador'])
+        cotizacion.colaborador = Colaboradore.objects.get(Q(nombre__iexact=data['colaborador']))
         cotizacion.creada_por = Usuario.objects.get(id=data['usuario'])
         cotizacion.fecha_expiracion = fecha_evento + timedelta(days=15)
         cotizacion.save()
         cotizacion_instance = Cotizacion.objects.get(id=cotizacion.id)
-        cotizacion_instance.folio = "COT%04d" % cotizacion.id
+        cotizacion_instance.folio = "%d-COT%04d" % (cotizacion.creada_por.identificacion, cotizacion.id)
         cotizacion_instance.save()
 
         #Detalle

@@ -41,6 +41,7 @@ v1_api.register(CrearCostoFijo())
 v1_api.register(CrearComplemento())
 v1_api.register(EditarCostoFijo())
 v1_api.register(EditarPlatillo())
+v1_api.register(GetDocumentoCotizacion())
 
 urlpatterns = [
     path('api/', include(v1_api.urls)),

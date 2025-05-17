@@ -5,7 +5,7 @@ import os
 import pdb
 from django.conf import settings
 from django.utils.crypto import get_random_string
-from tastypie.resources import ModelResource,ALL, ALL_WITH_RELATIONS, Resource
+from tastypie.resources import ModelResource, ALL, ALL_WITH_RELATIONS, Resource
 from tastypie import fields
 from tastypie.validation import Validation
 from tastypie.authorization import Authorization
@@ -145,11 +145,12 @@ class GetEvento(ModelResource):
 
 class GetPlatillo(ModelResource):
     class Meta:
-        queryset = Platillo.objects.all()
+        queryset = Platillo.objects.all().order_by('id')
         resource_name = 'getplatillos'
         allowed_methods = ['get']
         always_return_data = True
         fields = ['id', 'nombre', 'precio']
+        ordering = ['id']
 
 class GetComplemento(ModelResource):
     class Meta:
@@ -165,7 +166,13 @@ class GetCostoFijo(ModelResource):
         resource_name = 'getcostofijo'
         allowed_methods = ['get']
         always_return_data = True
-        fields = ['id', 'nombre', 'precio']
+        fields = ['id', 'nombre', 'precio', 'pk']
+        ordering = ['id']
+
+class GetDocumentoCotizacion(ModelResource):
+    class Meta:
+        queryset = DocumentoCotizacion.objects.all()
+        resource_name = 'documentos'
 
 class GetColaboradores(ModelResource):
     class Meta:
@@ -177,21 +184,73 @@ class GetColaboradores(ModelResource):
         fields = ['id', 'nombre', 'status']
         filtering = {
             'id': ['exact'],
-            'nombre': ['icontains']
+            'nombre': ['icontains', 'exact']
         }
+        ordering = ['id']
 
 class GetCotizacion(ModelResource):
+    colaborador = fields.ForeignKey(GetColaboradores, 'colaborador', null=True, full=True)
     class Meta:
-        queryset = Cotizacion.objects.all()
+        queryset = Cotizacion.objects.all().order_by('-id')
         resource_name = 'getcotizacion'
         allowed_methods = ['get']
         always_return_data = True
         limit = 0
+        fields = ['id', 'folio', 'colaborador']
         filtering = {
             'id': ['exact'],
             'folio': ['icontains'],
-            'colaborador': ['icontains']
+            'colaborador': ALL_WITH_RELATIONS
         }
+
+    def build_filters(self, filters=None, ignore_bad_filters=False):
+        if filters is None:
+            filters = {}
+        
+        # Crear una copia de los filtros originales
+        original_filters = filters.copy()
+        
+        # Procesar filtros personalizados
+        colaborador_nombre = original_filters.pop('colaborador__nombre__icontains', None)
+        
+        # Ejecutar el método original para los filtros estándar
+        orm_filters = super(GetCotizacion, self).build_filters(original_filters, ignore_bad_filters)
+        
+        # Aplicar filtro personalizado si se proporcionó
+        if colaborador_nombre:
+            # Obtener los IDs de colaboradores que coinciden con el nombre
+            colaborador_ids = Colaboradore.objects.filter(nombre__icontains=colaborador_nombre).values_list('id', flat=True)
+            
+            # Añadir condición a los filtros ORM para filtrar por estos IDs
+            if 'colaborador__in' not in orm_filters:
+                orm_filters['colaborador__in'] = []
+            
+            orm_filters['colaborador__in'].extend(list(colaborador_ids))
+        
+        return orm_filters
+    
+    def apply_filters(self, request, applicable_filters):
+        # Aplicar filtros estándar
+        filtered = super(GetCotizacion, self).apply_filters(request, applicable_filters)
+        
+        # Obtener parámetros de consulta personalizados adicionales
+        colaborador_nombre = request.GET.get('colaborador_nombre', None)
+        
+        # Aplicar filtros personalizados adicionales si es necesario
+        if colaborador_nombre:
+            filtered = filtered.filter(colaborador__nombre__icontains=colaborador_nombre)
+        
+        return filtered
+
+    def dehydrate(self, bundle):
+        bundle.data['url_cotizacion'] = ''
+        bundle.data['url_contrato'] = ''
+        cotizacion = Cotizacion.objects.get(pk=bundle.data['id'])
+        documentos = cotizacion.documentos_cotizacion
+        if documentos.exists():
+            bundle.data['url_cotizacion'] = documentos.first().url_cotizacion
+            bundle.data['url_contrato'] = documentos.first().url_contrato
+        return bundle
 
 class CrearEvento(ModelResource):
     class Meta:
@@ -485,7 +544,7 @@ def generar_contrato_pdf(cotizacion_instance):
     doc = DocumentoCotizacion.objects.get(
         cotizacion=cotizacion_instance,        
     )
-    doc.url_contrato = url_cotizacion=f'cotizaciones/{pdf_filename}'
+    doc.url_contrato = f'cotizaciones/{pdf_filename}'
     doc.save()
 
     return doc

@@ -153,6 +153,15 @@ class GetPlatillo(ModelResource):
         fields = ['id', 'nombre', 'precio']
         ordering = ['id']
 
+class GetPlatilloJoven(ModelResource):
+    class Meta:
+        queryset = PlatilloJovene.objects.all().order_by('id')
+        resource_name = 'getplatillojoven'
+        allowed_methods = ['get']
+        always_return_data = True
+        fields = ['id', 'nombre']
+        ordering = ['id']
+
 class GetComplemento(ModelResource):
     class Meta:
         queryset = Complemento.objects.all()

@@ -201,15 +201,16 @@ class GetColaboradores(ModelResource):
 class GetCotizacion(ModelResource):
     colaborador = fields.ForeignKey(GetColaboradores, 'colaborador', null=True, full=True)
     class Meta:
-        queryset = Cotizacion.objects.all().order_by('-id')
+        queryset = Cotizacion.objects.filter(status=1).order_by('-id')
         resource_name = 'getcotizacion'
         allowed_methods = ['get']
         always_return_data = True
         limit = 0
-        fields = ['id', 'folio', 'colaborador']
+        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status']
         filtering = {
             'id': ['exact'],
             'folio': ['icontains'],
+            'telefono_novio': ['icontains'],
             'colaborador': ALL_WITH_RELATIONS
         }
 
@@ -254,12 +255,15 @@ class GetCotizacion(ModelResource):
 
     def dehydrate(self, bundle):
         bundle.data['url_cotizacion'] = ''
-        bundle.data['url_contrato'] = ''
+        bundle.data['url_contrato'] = ''        
         cotizacion = Cotizacion.objects.get(pk=bundle.data['id'])
+        expiracion = cotizacion.fecha_expiracion - cotizacion.created_at
         documentos = cotizacion.documentos_cotizacion
+        bundle.data['evento'] = cotizacion.evento.nombre
+        bundle.data['expiracion'] = expiracion.days
         if documentos.exists():
-            bundle.data['url_cotizacion'] = documentos.first().url_cotizacion
-            bundle.data['url_contrato'] = documentos.first().url_contrato
+            bundle.data['url_cotizacion'] = f"http://104.248.52.156/{documentos.first().url_cotizacion}"
+            bundle.data['url_contrato'] = f"http://104.248.52.156/{documentos.first().url_contrato}"
         return bundle
 
 class CrearEvento(ModelResource):
@@ -407,10 +411,10 @@ class CrearCotizacion(ModelResource):
             cotizacion.adicional = Complemento.objects.get(Q(nombre__iexact=data['adicional']))
         cotizacion.numero_personas = data['personas']
         cotizacion.colaborador = Colaboradore.objects.get(Q(nombre__iexact=data['colaborador']))
-        cotizacion.creada_por = Usuario.objects.get(id=data['usuario'])
-        cotizacion.fecha_expiracion = fecha_evento + timedelta(days=15)
+        cotizacion.creada_por = Usuario.objects.get(id=data['usuario'])        
         cotizacion.save()
         cotizacion_instance = Cotizacion.objects.get(id=cotizacion.id)
+        cotizacion_instance.fecha_expiracion = cotizacion_instance.created_at + timedelta(days=15)
         cotizacion_instance.folio = f"{cotizacion.creada_por.identificacion}-COT{cotizacion.id:05d}"
         cotizacion_instance.save()
 

@@ -293,7 +293,7 @@ class GetContrato(ModelResource):
         colaborador_nombre = original_filters.pop('colaborador__nombre__icontains', None)
         
         # Ejecutar el método original para los filtros estándar
-        orm_filters = super(GetCotizacion, self).build_filters(original_filters, ignore_bad_filters)
+        orm_filters = super(GetContrato, self).build_filters(original_filters, ignore_bad_filters)
         
         # Aplicar filtro personalizado si se proporcionó
         if colaborador_nombre:
@@ -310,7 +310,7 @@ class GetContrato(ModelResource):
     
     def apply_filters(self, request, applicable_filters):
         # Aplicar filtros estándar
-        filtered = super(GetCotizacion, self).apply_filters(request, applicable_filters)
+        filtered = super(GetContrato, self).apply_filters(request, applicable_filters)
         
         # Obtener parámetros de consulta personalizados adicionales
         colaborador_nombre = request.GET.get('colaborador_nombre', None)

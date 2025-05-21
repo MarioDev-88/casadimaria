@@ -201,12 +201,80 @@ class GetColaboradores(ModelResource):
 class GetCotizacion(ModelResource):
     colaborador = fields.ForeignKey(GetColaboradores, 'colaborador', null=True, full=True)
     class Meta:
-        queryset = Cotizacion.objects.filter(status=1).order_by('-id')
+        queryset = Cotizacion.objects.filter(status=1, contrato=False).order_by('-id')
         resource_name = 'getcotizacion'
         allowed_methods = ['get']
         always_return_data = True
         limit = 0
-        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status']
+        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status', 'telefono_novio', 'contrato']
+        filtering = {
+            'id': ['exact'],
+            'folio': ['icontains'],
+            'telefono_novio': ['icontains'],
+            'colaborador': ALL_WITH_RELATIONS
+        }
+
+    def build_filters(self, filters=None, ignore_bad_filters=False):
+        if filters is None:
+            filters = {}
+        
+        # Crear una copia de los filtros originales
+        original_filters = filters.copy()
+        
+        # Procesar filtros personalizados
+        colaborador_nombre = original_filters.pop('colaborador__nombre__icontains', None)
+        
+        # Ejecutar el método original para los filtros estándar
+        orm_filters = super(GetCotizacion, self).build_filters(original_filters, ignore_bad_filters)
+        
+        # Aplicar filtro personalizado si se proporcionó
+        if colaborador_nombre:
+            # Obtener los IDs de colaboradores que coinciden con el nombre
+            colaborador_ids = Colaboradore.objects.filter(nombre__icontains=colaborador_nombre).values_list('id', flat=True)
+            
+            # Añadir condición a los filtros ORM para filtrar por estos IDs
+            if 'colaborador__in' not in orm_filters:
+                orm_filters['colaborador__in'] = []
+            
+            orm_filters['colaborador__in'].extend(list(colaborador_ids))
+        
+        return orm_filters
+    
+    def apply_filters(self, request, applicable_filters):
+        # Aplicar filtros estándar
+        filtered = super(GetCotizacion, self).apply_filters(request, applicable_filters)
+        
+        # Obtener parámetros de consulta personalizados adicionales
+        colaborador_nombre = request.GET.get('colaborador_nombre', None)
+        
+        # Aplicar filtros personalizados adicionales si es necesario
+        if colaborador_nombre:
+            filtered = filtered.filter(colaborador__nombre__icontains=colaborador_nombre)
+        
+        return filtered
+
+    def dehydrate(self, bundle):
+        bundle.data['url_cotizacion'] = ''
+        bundle.data['url_contrato'] = ''        
+        cotizacion = Cotizacion.objects.get(pk=bundle.data['id'])
+        expiracion = cotizacion.fecha_expiracion - cotizacion.created_at
+        documentos = cotizacion.documentos_cotizacion
+        bundle.data['evento'] = cotizacion.evento.nombre
+        bundle.data['expiracion'] = expiracion.days
+        if documentos.exists():
+            bundle.data['url_cotizacion'] = f"http://104.248.52.156/{documentos.first().url_cotizacion}"
+            bundle.data['url_contrato'] = f"http://104.248.52.156/{documentos.first().url_contrato}"
+        return bundle
+
+class GetContrato(ModelResource):
+    colaborador = fields.ForeignKey(GetColaboradores, 'colaborador', null=True, full=True)
+    class Meta:
+        queryset = Cotizacion.objects.filter(status=1, contrato=True).order_by('-id')
+        resource_name = 'getcontratos'
+        allowed_methods = ['get']
+        always_return_data = True
+        limit = 0
+        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status', 'telefono_novio', 'contrato']
         filtering = {
             'id': ['exact'],
             'folio': ['icontains'],

@@ -198,6 +198,20 @@ class GetColaboradores(ModelResource):
         }
         ordering = ['id']
 
+class GetAgenda(ModelResource):
+    class Meta:
+        queryset = Cotizacion.objects.filter(status=1).order_by('id')
+        resource_name = 'getagenda'
+        allowed_methods = ['get']
+        limit = 0
+        always_return_data = True
+        fields = ['id', 'fecha_evento', 'hora_inicio', 'hora_fin', 'contrato']
+
+    def dehydrate(self, bundle):
+        fecha_formateada = bundle.data['fecha_evento'].strftime("%B %d, %Y")
+        bundle.data['fecha_evento'] = fecha_formateada
+        return bundle
+
 class GetCotizacion(ModelResource):
     colaborador = fields.ForeignKey(GetColaboradores, 'colaborador', null=True, full=True)
     class Meta:
@@ -206,7 +220,7 @@ class GetCotizacion(ModelResource):
         allowed_methods = ['get']
         always_return_data = True
         limit = 0
-        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status', 'telefono_novio', 'contrato']
+        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status', 'telefono_novio', 'contrato', 'hora_inicio', 'hora_fin']
         filtering = {
             'id': ['exact'],
             'folio': ['icontains'],
@@ -274,12 +288,13 @@ class GetContrato(ModelResource):
         allowed_methods = ['get']
         always_return_data = True
         limit = 0
-        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status', 'telefono_novio', 'contrato']
+        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status', 'telefono_novio', 'contrato', 'hora_inicio', 'hora_fin']
         filtering = {
             'id': ['exact'],
             'folio': ['icontains'],
             'telefono_novio': ['icontains'],
-            'colaborador': ALL_WITH_RELATIONS
+            'colaborador': ALL_WITH_RELATIONS,
+            'contrato': ['exact']
         }
 
     def build_filters(self, filters=None, ignore_bad_filters=False):
@@ -424,6 +439,7 @@ class GenerarContrato(ModelResource):
         id_cotizacion = data['id_cotizacion']
         cotizacion = Cotizacion.objects.get(id=id_cotizacion)
         cotizacion.contrato = True
+        cotizacion.fecha_confirmacion = datetime.now()
         cotizacion.save()
 
         # Generar PDF contrato
@@ -849,6 +865,7 @@ class CancelarCotizacion(ModelResource):
         
     def obj_delete(self, bundle, **kwargs):
         cotizacion = self.obj_get(bundle, **kwargs)
-        cotizacion.status = False
+        cotizacion.status = 2
+        cotizacion.fecha_cancelacion = datetime.now()
         cotizacion.save()
 

@@ -44,6 +44,7 @@ v1_api.register(EditarPlatillo())
 v1_api.register(GetDocumentoCotizacion())
 v1_api.register(GetPlatilloJoven())
 v1_api.register(GetContrato())
+v1_api.register(GetAgenda())
 
 urlpatterns = [
     path('api/', include(v1_api.urls)),

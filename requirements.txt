@@ -1,12 +1,13 @@
 asgiref==3.7.2
 chardet==5.2.0
 Django==3.2.25
+django-crontab==0.7.1
 django-tastypie==0.15.1
 gunicorn==23.0.0
 importlib-metadata==6.7.0
 packaging==24.0
 pdfrw==0.4
-Pillow==11.2.1
+Pillow==9.5.0
 psycopg2==2.9.9
 PyPDF2==3.0.1
 python-dateutil==2.9.0.post0

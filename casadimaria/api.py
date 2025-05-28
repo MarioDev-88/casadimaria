@@ -200,7 +200,7 @@ class GetColaboradores(ModelResource):
 
 class GetAgenda(ModelResource):
     class Meta:
-        queryset = Cotizacion.objects.filter(status=1).order_by('id')
+        queryset = Cotizacion.objects.filter(status=1).order_by('fecha_evento')
         resource_name = 'getagenda'
         allowed_methods = ['get']
         limit = 0

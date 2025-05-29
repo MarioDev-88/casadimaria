@@ -288,7 +288,7 @@ class GetContrato(ModelResource):
         allowed_methods = ['get']
         always_return_data = True
         limit = 0
-        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'status', 'telefono_novio', 'contrato', 'hora_inicio', 'hora_fin']
+        fields = ['id', 'folio', 'colaborador', 'created_at', 'fecha_expiracion', 'fecha_evento', 'fecha_confirmacion', 'status', 'telefono_novio', 'contrato', 'hora_inicio', 'hora_fin']
         filtering = {
             'id': ['exact'],
             'folio': ['icontains'],
@@ -329,10 +329,21 @@ class GetContrato(ModelResource):
         
         # Obtener parámetros de consulta personalizados adicionales
         colaborador_nombre = request.GET.get('colaborador_nombre', None)
+        desde_str = request.GET.get('desde', None)
+        hasta_str = request.GET.get('hasta', None)
+        desde, hasta = None, None
+        if desde_str and hasta_str:
+            desde = datetime.strptime(desde_str, '%Y-%m-%d')
+            hasta = datetime.strptime(hasta_str, '%Y-%m-%d')
+            hasta = hasta.replace(hour=23, minute=59, second=59)
+        
         
         # Aplicar filtros personalizados adicionales si es necesario
         if colaborador_nombre:
             filtered = filtered.filter(colaborador__nombre__icontains=colaborador_nombre)
+
+        if desde and hasta:
+            filtered = filtered.filter(fecha_confirmacion__range=(desde, hasta))
         
         return filtered
 

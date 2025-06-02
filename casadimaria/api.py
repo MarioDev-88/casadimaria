@@ -223,7 +223,7 @@ class GetAgenda(ModelResource):
         
         # Aplicar filtros personalizados adicionales si es necesario
         if desde and hasta:
-            filtered = filtered.filter(fecha_confirmacion__range=(desde, hasta))
+            filtered = filtered.filter(created_at__range=(desde, hasta))
         
         return filtered
 

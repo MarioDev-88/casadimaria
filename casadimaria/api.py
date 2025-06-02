@@ -206,18 +206,44 @@ class GetAgenda(ModelResource):
         allowed_methods = ['get']
         limit = 0
         always_return_data = True
-        fields = ['id', 'fecha_evento', 'hora_inicio', 'hora_fin', 'contrato']
+        fields = ['id', 'fecha_evento', 'hora_inicio', 'hora_fin', 'contrato', 'fecha_confirmacion']
+
+    def apply_filters(self, request, applicable_filters):
+        # Aplicar filtros estándar
+        filtered = super(GetAgenda, self).apply_filters(request, applicable_filters)
+        
+        # Obtener parámetros de consulta personalizados adicionales
+        desde_str = request.GET.get('desde', None)
+        hasta_str = request.GET.get('hasta', None)
+        desde, hasta = None, None
+        if desde_str and hasta_str:
+            desde = datetime.strptime(desde_str, '%Y-%m-%d')
+            hasta = datetime.strptime(hasta_str, '%Y-%m-%d')
+            hasta = hasta.replace(hour=23, minute=59, second=59)
+        
+        # Aplicar filtros personalizados adicionales si es necesario
+        if desde and hasta:
+            filtered = filtered.filter(fecha_confirmacion__range=(desde, hasta))
+        
+        return filtered
 
     def dehydrate(self, bundle):
         # Configurar locale a español
-        try:
-            locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')  # Linux/Mac
-        except:
-            try:
-                locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')  # Windows
-            except:
-                pass
-        fecha_formateada = bundle.data['fecha_evento'].strftime("%B %d, %Y")
+        meses_es = {
+            1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril',
+            5: 'mayo', 6: 'junio', 7: 'julio', 8: 'agosto',
+            9: 'septiembre', 10: 'octubre', 11: 'noviembre', 12: 'diciembre'
+        }
+        # try:
+        #     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')  # Linux/Mac
+        # except:
+        #     try:
+        #         locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')  # Windows
+        #     except:
+        #         pass
+        fecha = bundle.data['fecha_evento']
+        mes_es = meses_es[fecha.month].capitalize()
+        fecha_formateada = f"{mes_es} {fecha.day}, {fecha.year}"
         bundle.data['fecha_evento'] = fecha_formateada.upper()
         return bundle
 
@@ -302,8 +328,7 @@ class GetContrato(ModelResource):
             'id': ['exact'],
             'folio': ['icontains'],
             'telefono_novio': ['icontains'],
-            'colaborador': ALL_WITH_RELATIONS,
-            'contrato': ['exact']
+            'colaborador': ALL_WITH_RELATIONS
         }
 
     def build_filters(self, filters=None, ignore_bad_filters=False):
@@ -349,10 +374,10 @@ class GetContrato(ModelResource):
         
         # Aplicar filtros personalizados adicionales si es necesario
         if colaborador_nombre:
-            filtered = filtered.filter(colaborador__nombre__icontains=colaborador_nombre)
+            filtered = filtered.filter(colaborador__nombre__icontains=colaborador_nombre, contrato=True, status=1)
 
         if desde and hasta:
-            filtered = filtered.filter(fecha_confirmacion__range=(desde, hasta))
+            filtered = filtered.filter(fecha_confirmacion__range=(desde, hasta), contrato=True, status=1)
         
         return filtered
 
@@ -600,15 +625,22 @@ class CrearCotizacion(ModelResource):
 
 def generar_contrato_pdf(cotizacion_instance):
     # Configurar locale a español
-    try:
-        locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')  # Linux/Mac
-    except:
-        try:
-            locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')  # Windows
-        except:
-            pass
-    fecha_formateada = cotizacion_instance.fecha_evento.strftime("%d de %B del %Y")
-    fecha_creada = cotizacion_instance.created_at.strftime("%d de %B del %Y")
+    # try:
+    #     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')  # Linux/Mac
+    # except:
+    #     try:
+    #         locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')  # Windows
+    #     except:
+    #         pass
+    meses_es = {
+        1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril',
+        5: 'mayo', 6: 'junio', 7: 'julio', 8: 'agosto',
+        9: 'septiembre', 10: 'octubre', 11: 'noviembre', 12: 'diciembre'
+    }
+    fecha_evento = cotizacion_instance.fecha_evento
+    fecha_creacion = cotizacion_instance.created_at
+    fecha_formateada = f"{fecha_evento.day} de {meses_es[fecha_evento.month].capitalize()} del {fecha_evento.year}" #cotizacion_instance.fecha_evento.strftime("%d de %B del %Y")
+    fecha_creada = f"{fecha_creacion.day} de {meses_es[fecha_creacion.month].capitalize()} del {fecha_creacion.year}" #cotizacion_instance.created_at.strftime("%d de %B del %Y")
     pdfmetrics.registerFont(TTFont('Aleo', f'{settings.MEDIA_ROOT}Aleo-Regular.ttf'))
     pdfmetrics.registerFont(TTFont('AleoLight', f'{settings.MEDIA_ROOT}Aleo-Thin.ttf'))
     pdfmetrics.registerFont(TTFont('Roboto', f'{settings.MEDIA_ROOT}Roboto_Condensed-Regular.ttf'))
@@ -676,13 +708,20 @@ def generar_contrato_pdf(cotizacion_instance):
     return doc
 
 # Generar PDF para cotizacion
-def generar_pdf_cotizacion(cotizacion_instance, total):    
+def generar_pdf_cotizacion(cotizacion_instance, total):  
+    meses_es = {
+        1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril',
+        5: 'mayo', 6: 'junio', 7: 'julio', 8: 'agosto',
+        9: 'septiembre', 10: 'octubre', 11: 'noviembre', 12: 'diciembre'
+    }  
     pdfmetrics.registerFont(TTFont('Aleo', f'{settings.MEDIA_ROOT}Aleo-Regular.ttf'))
     pdfmetrics.registerFont(TTFont('AleoLight', f'{settings.MEDIA_ROOT}Aleo-Thin.ttf'))
     pdfmetrics.registerFont(TTFont('Roboto', f'{settings.MEDIA_ROOT}Roboto_Condensed-Regular.ttf'))
     # Suponiendo que cotizacion_instance.fecha_evento es un objeto datetime
-    fecha_formateada = cotizacion_instance.fecha_evento.strftime("%d de %B del %Y")
-    fecha_formateada_creacion = cotizacion_instance.created_at.strftime("%d de %B del %Y")
+    fecha_evento = cotizacion_instance.fecha_evento
+    fecha_creacion = cotizacion_instance.created_at
+    fecha_formateada = f"{fecha_evento.day} de {meses_es[fecha_evento.month].capitalize()} del {fecha_evento.year}" #cotizacion_instance.fecha_evento.strftime("%d de %B del %Y")
+    fecha_formateada_creacion = f"{fecha_creacion.day} de {meses_es[fecha_creacion.month].capitalize()} del {fecha_creacion.year}" #cotizacion_instance.created_at.strftime("%d de %B del %Y")
     # Formatear el total como moneda mexicana
     total_formateado = "${:,.2f} MXN".format(total)
     pdf_filename = f"cotizacion_{cotizacion_instance.id}.pdf"

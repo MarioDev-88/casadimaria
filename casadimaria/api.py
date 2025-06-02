@@ -223,7 +223,7 @@ class GetAgenda(ModelResource):
         
         # Aplicar filtros personalizados adicionales si es necesario
         if desde and hasta:
-            filtered = filtered.filter(created_at__range=(desde, hasta))
+            filtered = filtered.filter(fecha_evento__range=(desde, hasta))
         
         return filtered
 
@@ -377,7 +377,7 @@ class GetContrato(ModelResource):
             filtered = filtered.filter(colaborador__nombre__icontains=colaborador_nombre, contrato=True, status=1)
 
         if desde and hasta:
-            filtered = filtered.filter(fecha_confirmacion__range=(desde, hasta), contrato=True, status=1)
+            filtered = filtered.filter(fecha_evento__range=(desde, hasta), contrato=True, status=1)
         
         return filtered
 

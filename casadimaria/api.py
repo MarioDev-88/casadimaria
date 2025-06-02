@@ -1,5 +1,6 @@
 # -*- encoding: utf-8 -*-
 from __future__ import division
+import locale
 from datetime import datetime, timedelta
 import os
 import pdb
@@ -208,8 +209,16 @@ class GetAgenda(ModelResource):
         fields = ['id', 'fecha_evento', 'hora_inicio', 'hora_fin', 'contrato']
 
     def dehydrate(self, bundle):
+        # Configurar locale a español
+        try:
+            locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')  # Linux/Mac
+        except:
+            try:
+                locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')  # Windows
+            except:
+                pass
         fecha_formateada = bundle.data['fecha_evento'].strftime("%B %d, %Y")
-        bundle.data['fecha_evento'] = fecha_formateada
+        bundle.data['fecha_evento'] = fecha_formateada.upper()
         return bundle
 
 class GetCotizacion(ModelResource):
@@ -590,6 +599,14 @@ class CrearCotizacion(ModelResource):
     
 
 def generar_contrato_pdf(cotizacion_instance):
+    # Configurar locale a español
+    try:
+        locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')  # Linux/Mac
+    except:
+        try:
+            locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')  # Windows
+        except:
+            pass
     fecha_formateada = cotizacion_instance.fecha_evento.strftime("%d de %B del %Y")
     fecha_creada = cotizacion_instance.created_at.strftime("%d de %B del %Y")
     pdfmetrics.registerFont(TTFont('Aleo', f'{settings.MEDIA_ROOT}Aleo-Regular.ttf'))

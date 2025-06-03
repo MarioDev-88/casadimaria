@@ -116,6 +116,13 @@ class CreateUser(ModelResource):
 
         return HttpResponse(content_type='application/json', status=201)
     
+class GetUser(ModelResource):
+    class Meta:
+        queryset = Usuario.objects.all()
+        limit = 0
+        resource_name = 'getuser'
+        allowed_methods = ['get']
+    
 class Login(ModelResource):
     class Meta:
         queryset = Usuario.objects.all()

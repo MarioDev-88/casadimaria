@@ -45,6 +45,7 @@ v1_api.register(GetDocumentoCotizacion())
 v1_api.register(GetPlatilloJoven())
 v1_api.register(GetContrato())
 v1_api.register(GetAgenda())
+v1_api.register(GetUser())
 
 urlpatterns = [
     path('api/', include(v1_api.urls)),

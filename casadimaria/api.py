@@ -112,7 +112,7 @@ class CreateUser(ModelResource):
         usuario.telefono = data['telefono']
         usuario.password = make_password(data['pwd'])
         usuario.identificacion = data['identificacion'] #get_random_string(length=8)
-        usuario.save()
+        usuario.edit_no_password()
 
         return HttpResponse(content_type='application/json', status=201)
     
@@ -132,15 +132,16 @@ class Login(ModelResource):
 
     def get_list(self, request, **kwargs):
         id_ = request.GET.get('id')
-        #pwd = request.GET.get('pwd')
+        pwd = request.GET.get('pwd')
         datosarray = {}
         usuario = Usuario.objects.get(identificacion=id_)
         if usuario:
-            datosarray['id'] = usuario.pk
-            datosarray['identificacion'] = id_
-            datosarray['nombre'] = usuario.nombre
+            if usuario.check_password(pwd):
+                datosarray['id'] = usuario.pk
+                datosarray['identificacion'] = id_
+                datosarray['nombre'] = usuario.nombre
 
-            return HttpResponse(json.dumps(datosarray) ,content_type='application/json', status=200)
+                return HttpResponse(json.dumps(datosarray) ,content_type='application/json', status=200)
         
         return HttpResponse(status=404)
     
@@ -758,12 +759,33 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        #if cotizacion_instance.evento.pk == 3: #XV Anos
+        #    c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        #else:
+        #    c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        c.showPage()        
+        c.showPage()        
+        if cotizacion_instance.numero_personas <= 200:
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Premium").precio
+        elif cotizacion_instance.numero_personas >= 201 and cotizacion_instance.numero_personas <= 300:
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Premium").precio
         else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
-        c.showPage()
-        c.showPage()
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Premium").precio
+
+        c.drawString(276, 640, "${:,.2f}".format(precio_por_persona_pollo)) 
+        c.drawString(355, 640, "${:,.2f}".format(precio_por_persona_puerco))
+        c.drawString(430, 640, "${:,.2f}".format(precio_por_persona_res))
+        c.setFont("Aleo", 10)
+        c.drawString(118, 605, f"PRECIO POR {cotizacion_instance.numero_personas} INVITADOS")
+        c.drawString(276, 605, "${:,.2f}".format(precio_por_persona_pollo * cotizacion_instance.numero_personas)) 
+        c.drawString(355, 605, "${:,.2f}".format(precio_por_persona_puerco * cotizacion_instance.numero_personas))
+        c.drawString(430, 605, "${:,.2f}".format(precio_por_persona_res * cotizacion_instance.numero_personas))
         c.showPage()
         c.showPage()
         c.showPage()
@@ -778,12 +800,33 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # if cotizacion_instance.evento.pk == 3: #XV Anos
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # else:
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        c.showPage()
+        c.showPage()
+        if cotizacion_instance.numero_personas <= 200:
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Premium").precio
+        elif cotizacion_instance.numero_personas >= 201 and cotizacion_instance.numero_personas <= 300:
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Premium").precio
         else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
-        c.showPage()
-        c.showPage()
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Premium").precio
+
+        c.drawString(276, 640, "${:,.2f}".format(precio_por_persona_pollo)) 
+        c.drawString(355, 640, "${:,.2f}".format(precio_por_persona_puerco))
+        c.drawString(430, 640, "${:,.2f}".format(precio_por_persona_res))
+        c.setFont("Aleo", 10)
+        c.drawString(118, 605, f"PRECIO POR {cotizacion_instance.numero_personas} INVITADOS")
+        c.drawString(276, 605, "${:,.2f}".format(precio_por_persona_pollo * cotizacion_instance.numero_personas)) 
+        c.drawString(355, 605, "${:,.2f}".format(precio_por_persona_puerco * cotizacion_instance.numero_personas))
+        c.drawString(430, 605, "${:,.2f}".format(precio_por_persona_res * cotizacion_instance.numero_personas))
         c.showPage()
         c.showPage()
         c.setFont("Roboto", 13) #13
@@ -797,10 +840,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        # if cotizacion_instance.evento.pk == 3: #XV Anos
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # else:
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -816,10 +859,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        # if cotizacion_instance.evento.pk == 3: #XV Anos
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # else:
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -835,12 +878,33 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # if cotizacion_instance.evento.pk == 3: #XV Anos
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # else:
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        c.showPage()
+        c.showPage()
+        if cotizacion_instance.numero_personas <= 200:
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Premium").precio
+        elif cotizacion_instance.numero_personas >= 201 and cotizacion_instance.numero_personas <= 300:
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Premium").precio
         else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
-        c.showPage()
-        c.showPage()
+            precio_por_persona_pollo = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Pollo").precio
+            precio_por_persona_puerco = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Puerco").precio
+            precio_por_persona_res = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Premium").precio
+
+        c.drawString(276, 640, "${:,.2f}".format(precio_por_persona_pollo)) 
+        c.drawString(355, 640, "${:,.2f}".format(precio_por_persona_puerco))
+        c.drawString(430, 640, "${:,.2f}".format(precio_por_persona_res))
+        c.setFont("Aleo", 10)
+        c.drawString(118, 605, f"PRECIO POR {cotizacion_instance.numero_personas} INVITADOS")
+        c.drawString(276, 605, "${:,.2f}".format(precio_por_persona_pollo * cotizacion_instance.numero_personas)) 
+        c.drawString(355, 605, "${:,.2f}".format(precio_por_persona_puerco * cotizacion_instance.numero_personas))
+        c.drawString(430, 605, "${:,.2f}".format(precio_por_persona_res * cotizacion_instance.numero_personas))
         c.showPage()
         c.showPage()
         c.setFont("Roboto", 13)
@@ -854,10 +918,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        # if cotizacion_instance.evento.pk == 3: #XV Anos
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # else:
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -873,10 +937,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        # if cotizacion_instance.evento.pk == 3: #XV Anos
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        # else:
+        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -908,6 +972,8 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         page = existing_pdf.pages[i]
         if i == 0:
             page.merge_page(new_pdf.pages[0])
+        if i == 2:
+            page.merge_page(new_pdf.pages[2])
         if i == 4:
             page.merge_page(new_pdf.pages[4])
         if i == 5:

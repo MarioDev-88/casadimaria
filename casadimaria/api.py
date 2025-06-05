@@ -660,23 +660,39 @@ def generar_contrato_pdf(cotizacion_instance):
     packet = io.BytesIO()
     c = canvas.Canvas(packet, pagesize=letter)
     c.setFont("Roboto", 12)
-    c.drawString(360, 628, f"{cotizacion_instance.nombre_novio}")
-    c.drawString(185, 532, f"{cotizacion_instance.evento.nombre}")
-    c.drawString(132, 517, f"{fecha_formateada}")
-    c.drawString(225, 502, f"{cotizacion_instance.numero_personas}")
-    c.drawString(192, 488, f"{cotizacion_instance.platillo.nombre}")
-    if cotizacion_instance.platillo_jovenes:
-        c.drawString(192, 474, f"{cotizacion_instance.platillo_jovenes.nombre}")
+    c.drawString(85, 568, f"{cotizacion_instance.nombre_novio}")
+    c.drawString(85, 333, f"{cotizacion_instance.nombre_novio}")
+    c.drawString(310, 319, f"{cotizacion_instance.evento.nombre}")
+    c.drawString(85, 144, f"{cotizacion_instance.evento.nombre}")
+    c.drawString(325, 144, f"{fecha_formateada}")
+    # c.drawString(185, 532, f"{cotizacion_instance.evento.nombre}")
+    # c.drawString(132, 517, f"{fecha_formateada}")
+    # c.drawString(225, 502, f"{cotizacion_instance.numero_personas}")
+    # c.drawString(192, 488, f"{cotizacion_instance.platillo.nombre}")
+    # if cotizacion_instance.platillo_jovenes:
+    #     c.drawString(192, 474, f"{cotizacion_instance.platillo_jovenes.nombre}")
+    # else:
+    #     c.drawString(192, 474, f"Sin platillo")
+    # c.drawString(148, 459, f"{cotizacion_instance.hora_inicio} a {cotizacion_instance.hora_fin}")
+    # c.drawString(278, 444, "${:,.2f} MXN".format(cotizacion_instance.detalle_cotizacion.get().npp))
+    # c.drawString(258, 428, "${:,.2f} MXN".format(cotizacion_instance.detalle_cotizacion.get().npj))
+    c.showPage()
+    c.drawString(218, 550, f"{cotizacion_instance.evento.nombre}")    
+    c.drawString(385, 550, f"{fecha_formateada}")
+    c.showPage()    
+    if cotizacion_instance.evento.pk == 3:
+        c.drawString(201, 212, f"{cotizacion_instance.numero_personas+cotizacion_instance.numero_jovenes}")
     else:
-        c.drawString(192, 474, f"Sin platillo")
-    c.drawString(148, 459, f"{cotizacion_instance.hora_inicio} a {cotizacion_instance.hora_fin}")
-    c.drawString(278, 444, "${:,.2f} MXN".format(cotizacion_instance.detalle_cotizacion.get().npp))
-    c.drawString(258, 428, "${:,.2f} MXN".format(cotizacion_instance.detalle_cotizacion.get().npj))
+        c.drawString(201, 212, f"{cotizacion_instance.numero_personas}")
     c.showPage()
     c.showPage()
+    c.drawString(335, 285, f"{cotizacion_instance.nombre_novio}")
+    c.showPage()    
     c.showPage()
-    c.drawString(157, 445, f"{fecha_creada}")
-    c.drawString(325, 315, f"{cotizacion_instance.nombre_novio}")
+    c.drawString(85, 355, f"{cotizacion_instance.nombre_novio}")
+    c.showPage()    
+    #c.drawString(157, 445, f"{fecha_creada}")
+    #c.drawString(325, 315, f"{cotizacion_instance.nombre_novio}")
     c.save()
     # Mover al inicio del BytesIO
     packet.seek(0)
@@ -699,8 +715,16 @@ def generar_contrato_pdf(cotizacion_instance):
         page = existing_pdf.pages[i]
         if i == 0:
             page.merge_page(new_pdf.pages[0])
+        if i == 1:
+            page.merge_page(new_pdf.pages[1])
+        if i == 2:
+            page.merge_page(new_pdf.pages[2])
         if i == 3:
             page.merge_page(new_pdf.pages[3])
+        if i == 4:
+            page.merge_page(new_pdf.pages[4])
+        if i == 6:
+            page.merge_page(new_pdf.pages[6])
         output.add_page(existing_pdf.pages[i])
 
     # Guardar el PDF final
@@ -736,15 +760,15 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
     pdf_path = os.path.join(settings.MEDIA_ROOT, 'cotizaciones', pdf_filename)
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
     # Ruta al PDF base (plantilla)
-    if cotizacion_instance.platillo.pk == 1: # Pollo
+    if cotizacion_instance.platillo.pk == 1 or cotizacion_instance.platillo.pk == 9: # Pollo
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_pollo_base.pdf')
-    elif cotizacion_instance.platillo.pk == 2: # Puerco
+    elif cotizacion_instance.platillo.pk == 2 or cotizacion_instance.platillo.pk == 10: # Puerco
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_cerdo_base.pdf')
     elif cotizacion_instance.platillo.pk == 3: # Italiano
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_italiano_base.pdf')
     elif cotizacion_instance.platillo.pk == 4: # Mixto
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_mixto_base.pdf')
-    elif cotizacion_instance.platillo.pk == 5: # Premium
+    elif cotizacion_instance.platillo.pk == 5 or cotizacion_instance.platillo.pk == 13: # Premium
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_premium_base.pdf')
     elif cotizacion_instance.platillo.pk == 6: # Parrillada
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_parrillada_base.pdf')

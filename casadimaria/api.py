@@ -840,10 +840,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        # if cotizacion_instance.evento.pk == 3: #XV Anos
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        # else:
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        if cotizacion_instance.evento.pk == 3: #XV Anos
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        else:
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -859,10 +859,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        # if cotizacion_instance.evento.pk == 3: #XV Anos
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        # else:
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        if cotizacion_instance.evento.pk == 3: #XV Anos
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        else:
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -918,10 +918,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        # if cotizacion_instance.evento.pk == 3: #XV Anos
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        # else:
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        if cotizacion_instance.evento.pk == 3: #XV Anos
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        else:
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -937,10 +937,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Aleo", 16)
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
-        # if cotizacion_instance.evento.pk == 3: #XV Anos
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
-        # else:
-        #     c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+        if cotizacion_instance.evento.pk == 3: #XV Anos
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+        else:
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
         c.showPage()
         c.showPage()
         c.showPage()

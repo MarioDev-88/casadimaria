@@ -846,14 +846,26 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
             precio_por_persona_pollo = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Pollo").precio
             precio_por_persona_puerco = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Puerco").precio
             precio_por_persona_res = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Premium").precio
+            if cotizacion_instance.platillo.pk == 9 or cotizacion_instance.platillo.pk == 10 or cotizacion_instance.platillo.pk == 13:
+                precio_por_persona_pollo = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Pollo (Promoción)").precio
+                precio_por_persona_puerco = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Puerco (Promoción)").precio
+                precio_por_persona_res = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Premium (Promoción)").precio        
         elif cotizacion_instance.numero_personas >= 201 and cotizacion_instance.numero_personas <= 300:
             precio_por_persona_pollo = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Pollo").precio
             precio_por_persona_puerco = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Puerco").precio
             precio_por_persona_res = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Premium").precio
+            if cotizacion_instance.platillo.pk == 9 or cotizacion_instance.platillo.pk == 10 or cotizacion_instance.platillo.pk == 13:
+                precio_por_persona_pollo = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Pollo (Promoción)").precio    
+                precio_por_persona_puerco = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Puerco (Promoción)").precio                    
+                precio_por_persona_res = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Premium (Promoción)").precio            
         else:
             precio_por_persona_pollo = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Pollo").precio
             precio_por_persona_puerco = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Puerco").precio
             precio_por_persona_res = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Premium").precio
+            if cotizacion_instance.platillo.pk == 9 or cotizacion_instance.platillo.pk == 10 or cotizacion_instance.platillo.pk == 13:
+                precio_por_persona_pollo = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Pollo (Promoción)").precio                    
+                precio_por_persona_puerco = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Puerco (Promoción)").precio                    
+                precio_por_persona_res = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Premium (Promoción)").precio      
 
         c.drawString(276, 640, "${:,.2f}".format(precio_por_persona_pollo)) 
         c.drawString(355, 640, "${:,.2f}".format(precio_por_persona_puerco))
@@ -924,14 +936,26 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
             precio_por_persona_pollo = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Pollo").precio
             precio_por_persona_puerco = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Puerco").precio
             precio_por_persona_res = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Premium").precio
+            if cotizacion_instance.platillo.pk == 9 or cotizacion_instance.platillo.pk == 10 or cotizacion_instance.platillo.pk == 13:
+                precio_por_persona_pollo = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Pollo (Promoción)").precio
+                precio_por_persona_puerco = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Puerco (Promoción)").precio
+                precio_por_persona_res = CostoFijo.objects.get(nombre="0 a 200").precio + Platillo.objects.get(nombre="Premium (Promoción)").precio        
         elif cotizacion_instance.numero_personas >= 201 and cotizacion_instance.numero_personas <= 300:
             precio_por_persona_pollo = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Pollo").precio
             precio_por_persona_puerco = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Puerco").precio
             precio_por_persona_res = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Premium").precio
+            if cotizacion_instance.platillo.pk == 9 or cotizacion_instance.platillo.pk == 10 or cotizacion_instance.platillo.pk == 13:
+                precio_por_persona_pollo = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Pollo (Promoción)").precio    
+                precio_por_persona_puerco = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Puerco (Promoción)").precio                    
+                precio_por_persona_res = CostoFijo.objects.get(nombre="201 a 300").precio + Platillo.objects.get(nombre="Premium (Promoción)").precio            
         else:
             precio_por_persona_pollo = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Pollo").precio
             precio_por_persona_puerco = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Puerco").precio
             precio_por_persona_res = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Premium").precio
+            if cotizacion_instance.platillo.pk == 9 or cotizacion_instance.platillo.pk == 10 or cotizacion_instance.platillo.pk == 13:
+                precio_por_persona_pollo = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Pollo (Promoción)").precio                    
+                precio_por_persona_puerco = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Puerco (Promoción)").precio                    
+                precio_por_persona_res = CostoFijo.objects.get(nombre="301 a 399").precio + Platillo.objects.get(nombre="Premium (Promoción)").precio      
 
         c.drawString(276, 640, "${:,.2f}".format(precio_por_persona_pollo)) 
         c.drawString(355, 640, "${:,.2f}".format(precio_por_persona_puerco))

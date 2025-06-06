@@ -818,7 +818,7 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Roboto", 11)
         c.drawString(340, 198, f"Cotización realizada el día {fecha_formateada_creacion}")
         c.showPage()
-    elif cotizacion_instance.platillo.pk == 2 or cotizacion_instance.platillo.pk == 11:
+    elif cotizacion_instance.platillo.pk == 2 or cotizacion_instance.platillo.pk == 10:
         c.setFont("AleoLight", 32)
         c.drawCentredString(305, 230, f"{cotizacion_instance.evento.nombre.upper()}")
         c.setFont("Aleo", 16)

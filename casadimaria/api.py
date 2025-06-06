@@ -777,7 +777,7 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
     # Crear un PDF en memoria con la información dinámica
     packet = io.BytesIO()
     c = canvas.Canvas(packet, pagesize=letter)
-    if cotizacion_instance.platillo.pk == 1:
+    if cotizacion_instance.platillo.pk == 1 or cotizacion_instance.platillo.pk == 9:
         c.setFont("AleoLight", 32)
         c.drawCentredString(305, 230, f"{cotizacion_instance.evento.nombre.upper()}")
         c.setFont("Aleo", 16)
@@ -818,7 +818,7 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Roboto", 11)
         c.drawString(340, 198, f"Cotización realizada el día {fecha_formateada_creacion}")
         c.showPage()
-    elif cotizacion_instance.platillo.pk == 2:
+    elif cotizacion_instance.platillo.pk == 2 or cotizacion_instance.platillo.pk == 11:
         c.setFont("AleoLight", 32)
         c.drawCentredString(305, 230, f"{cotizacion_instance.evento.nombre.upper()}")
         c.setFont("Aleo", 16)
@@ -896,7 +896,7 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Roboto", 11)
         c.drawString(340, 198, f"Cotización realizada el día {fecha_formateada_creacion}")
         c.showPage()
-    elif cotizacion_instance.platillo.pk == 5:
+    elif cotizacion_instance.platillo.pk == 5 or cotizacion_instance.platillo.pk == 13:
         c.setFont("AleoLight", 32)
         c.drawCentredString(305, 230, f"{cotizacion_instance.evento.nombre.upper()}")
         c.setFont("Aleo", 16)

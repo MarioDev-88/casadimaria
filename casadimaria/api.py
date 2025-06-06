@@ -764,13 +764,13 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_pollo_base.pdf')
     elif cotizacion_instance.platillo.pk == 2 or cotizacion_instance.platillo.pk == 10: # Puerco
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_cerdo_base.pdf')
-    elif cotizacion_instance.platillo.pk == 3: # Italiano
+    elif cotizacion_instance.platillo.pk == 3 or cotizacion_instance.platillo.pk == 11: # Italiano
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_italiano_base.pdf')
-    elif cotizacion_instance.platillo.pk == 4: # Mixto
+    elif cotizacion_instance.platillo.pk == 4 or cotizacion_instance.platillo.pk == 12: # Mixto
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_mixto_base.pdf')
     elif cotizacion_instance.platillo.pk == 5 or cotizacion_instance.platillo.pk == 13: # Premium
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_premium_base.pdf')
-    elif cotizacion_instance.platillo.pk == 6: # Parrillada
+    elif cotizacion_instance.platillo.pk == 6 or cotizacion_instance.platillo.pk == 14: # Parrillada
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_parrillada_base.pdf')
     else: # Guiso
         pdf_template_path = os.path.join(settings.MEDIA_ROOT, '', 'cotizacion_guisos_base.pdf')        
@@ -870,7 +870,7 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Roboto", 11)
         c.drawString(340, 198, f"Cotización realizada el día {fecha_formateada_creacion}")
         c.showPage()
-    elif cotizacion_instance.platillo.pk == 3:
+    elif cotizacion_instance.platillo.pk == 3 or cotizacion_instance.platillo.pk == 11:
         c.setFont("AleoLight", 32)
         c.drawCentredString(305, 230, f"{cotizacion_instance.evento.nombre.upper()}")
         c.setFont("Aleo", 16)
@@ -889,7 +889,7 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Roboto", 11)
         c.drawString(340, 198, f"Cotización realizada el día {fecha_formateada_creacion}")
         c.showPage()
-    elif cotizacion_instance.platillo.pk == 4:
+    elif cotizacion_instance.platillo.pk == 4 or cotizacion_instance.platillo.pk == 12:
         c.setFont("AleoLight", 32)
         c.drawCentredString(305, 230, f"{cotizacion_instance.evento.nombre.upper()}")
         c.setFont("Aleo", 16)
@@ -948,7 +948,7 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.setFont("Roboto", 11)
         c.drawString(340, 198, f"Cotización realizada el día {fecha_formateada_creacion}")
         c.showPage()
-    elif cotizacion_instance.platillo.pk == 6:
+    elif cotizacion_instance.platillo.pk == 6 or cotizacion_instance.platillo.pk == 14:
         c.setFont("AleoLight", 32)
         c.drawCentredString(305, 230, f"{cotizacion_instance.evento.nombre.upper()}")
         c.setFont("Aleo", 16)

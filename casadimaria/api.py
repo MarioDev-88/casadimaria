@@ -632,14 +632,6 @@ class CrearCotizacion(ModelResource):
     
 
 def generar_contrato_pdf(cotizacion_instance):
-    # Configurar locale a español
-    # try:
-    #     locale.setlocale(locale.LC_TIME, 'es_ES.UTF-8')  # Linux/Mac
-    # except:
-    #     try:
-    #         locale.setlocale(locale.LC_TIME, 'Spanish_Spain.1252')  # Windows
-    #     except:
-    #         pass
     meses_es = {
         1: 'enero', 2: 'febrero', 3: 'marzo', 4: 'abril',
         5: 'mayo', 6: 'junio', 7: 'julio', 8: 'agosto',
@@ -756,6 +748,8 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
     fecha_formateada_creacion = f"{fecha_creacion.day} de {meses_es[fecha_creacion.month].capitalize()} del {fecha_creacion.year}" #cotizacion_instance.created_at.strftime("%d de %B del %Y")
     # Formatear el total como moneda mexicana
     total_formateado = "${:,.2f} MXN".format(total)
+    # Detalle cotizacion
+    precio_persona = "${:,.2f} MXN".format(cotizacion_instance.detalle_cotizacion.first().npp)
     pdf_filename = f"cotizacion_{cotizacion_instance.id}.pdf"
     pdf_path = os.path.join(settings.MEDIA_ROOT, 'cotizaciones', pdf_filename)
     os.makedirs(os.path.dirname(pdf_path), exist_ok=True)
@@ -889,9 +883,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
         if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado} MÁS IVA")
         else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado} MÁS IVA")
+        c.drawCentredString(310, 120, f"Precio por persona {precio_persona} MÁS IVA")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -908,9 +903,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
         if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado} MÁS IVA")
         else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado} MÁS IVA")
+        c.drawCentredString(310, 120, f"Precio por persona {precio_persona} MÁS IVA")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -979,9 +975,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
         if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado} MÁS IVA")
         else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado} MÁS IVA")
+        c.drawCentredString(310, 120, f"Precio por persona {precio_persona} MÁS IVA")
         c.showPage()
         c.showPage()
         c.showPage()
@@ -998,9 +995,10 @@ def generar_pdf_cotizacion(cotizacion_instance, total):
         c.drawCentredString(310, 200, f"{cotizacion_instance.nombre_novio}")
         c.drawCentredString(310, 170, f"{fecha_formateada}")
         if cotizacion_instance.evento.pk == 3: #XV Anos
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas + cotizacion_instance.numero_jovenes} invitados {total_formateado} MÁS IVA")
         else:
-            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado}")
+            c.drawCentredString(310, 140, f"Costo por {cotizacion_instance.numero_personas} invitados {total_formateado} MÁS IVA")
+        c.drawCentredString(310, 120, f"Precio por persona {precio_persona} MÁS IVA")
         c.showPage()
         c.showPage()
         c.showPage()
